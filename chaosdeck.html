@@ -34,7 +34,8 @@
         linear-gradient(135deg, #130323, #05010a);
       font-family: "Fredoka", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #fff7ff;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     h1 {
@@ -137,8 +138,8 @@
 
     .filters-note {
       margin-top: 0.45rem;
-      font-size: 0.7rem;
-      opacity: 0.78;
+      font-size: 0.75rem; /* slightly larger */
+      opacity: 0.8;
     }
 
     .buttons {
@@ -189,70 +190,54 @@
       perspective: 1200px;
     }
 
-/* ──────────────────────────────────────────────── */
-/* BASE MODIFIER CARD (light teal, dark readable text) */
-/* ──────────────────────────────────────────────── */
-.card {
-  position: relative;
-  width: min(320px, 92vw);
-  aspect-ratio: 2.5 / 3.75;
-  border-radius: 18px;
+    /* Base modifier card: light teal, dark text */
+    .card {
+      position: relative;
+      width: min(320px, 92vw);
+      aspect-ratio: 2.5 / 3.75;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, #ffffff 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, #e3f6ff 0, transparent 55%),
+        #f4fbff;
+      border: 3px solid #0288d1;
+      box-shadow:
+        0 12px 30px rgba(0,0,0,0.7),
+        0 0 0 2px rgba(0,0,0,0.45);
+      padding: 16px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform-origin: center;
+      transition:
+        box-shadow 0.16s ease,
+        background 0.16s ease,
+        border-color 0.16s ease;
+      cursor: pointer;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      overflow: hidden;
+    }
 
-  /* Lighter teal + gentle glow edges */
-  background:
-    radial-gradient(circle at 0 0, #ffffff 0, transparent 55%),
-    radial-gradient(circle at 100% 100%, #e3f6ff 0, transparent 55%),
-    #f4fbff;
+    .card:hover {
+      box-shadow:
+        0 18px 36px rgba(0,0,0,0.85),
+        0 0 0 2px rgba(0,0,0,0.5);
+    }
 
-  border: 3px solid #0288d1; /* lighter, brighter teal border */
+    .card-title {
+      font-family: "Chewy", system-ui, sans-serif;
+      font-size: 1.4rem;
+      color: #045b78;
+      text-shadow: 0 2px 0 #bde7ff;
+      padding: 0 0.4rem;
+    }
 
-  box-shadow:
-    0 12px 30px rgba(0,0,0,0.7),
-    0 0 0 2px rgba(0,0,0,0.45);
-
-  padding: 16px 14px 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  transform-origin: center;
-  transition:
-    box-shadow 0.16s ease,
-    background 0.16s ease,
-    border-color 0.16s ease;
-
-  cursor: pointer;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-  overflow: hidden;
-}
-
-/* Hover lift effect */
-.card:hover {
-  box-shadow:
-    0 18px 36px rgba(0,0,0,0.85),
-    0 0 0 2px rgba(0,0,0,0.5);
-}
-
-/* ───────────────────────────────────────────── */
-/* TEXT STYLING FOR REGULAR (NON-SPECIAL) CARDS */
-/* ───────────────────────────────────────────── */
-
-.card-title {
-  font-family: "Chewy", system-ui, sans-serif;
-  font-size: 1.4rem;
-
-  color: #045b78;               /* deep teal for readability */
-  text-shadow: 0 2px 0 #bde7ff; /* soft highlight */
-
-  padding: 0 0.4rem;
-}
-
-.card-text {
-  font-size: 1.02rem;
-  color: #143544;               /* dark blue-teal body text */
-  line-height: 1.45;
-}
+    .card-text {
+      font-size: 1.02rem;
+      color: #143544;
+      line-height: 1.45;
+    }
 
     /* Mini game card styling: purple/pink with sparkles + shimmer */
     .card.mini-game {
@@ -272,7 +257,6 @@
       color: #fbe8ff;
     }
 
-    /* Sparkle field */
     .card.mini-game::before {
       content: "";
       position: absolute;
@@ -300,7 +284,6 @@
       }
     }
 
-    /* Shimmer sweep */
     .card.mini-game::after {
       content: "";
       position: absolute;
@@ -355,7 +338,6 @@
       color: #ffe8dc;
     }
 
-    /* Burst behind super card */
     .card.super-modifier::before {
       content: "";
       position: absolute;
@@ -385,7 +367,6 @@
       }
     }
 
-    /* Foil shimmer band */
     .card.super-modifier::after {
       content: "";
       position: absolute;
@@ -426,10 +407,10 @@
     }
 
     .card-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #e0f7ff;
+      color: #7ab9ff; /* readable light blue */
       opacity: 0.96;
       margin-bottom: 0.3rem;
     }
@@ -477,7 +458,7 @@
 
     .status {
       margin-top: 0.7rem;
-      font-size: 0.78rem;
+      font-size: 0.84rem; /* slightly larger */
       opacity: 0.9;
       text-align: center;
       min-height: 1.3rem;
@@ -488,6 +469,31 @@
         font-size: 0.96rem;
       }
     }
+/* Intro "How to Play" card variant */
+.card.intro {
+  background:
+    radial-gradient(circle at 0 0, #ffffff 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, #c5ffe5 0, transparent 55%),
+    #e0fff4;
+  border-color: #1abc9c;
+}
+
+/* Slightly different title color on intro card (optional) */
+.card.intro .card-title {
+  color: #0b6b5c;
+  text-shadow: 0 2px 0 #bdf7e6;
+}
+
+/* When the label is empty (intro card), hide it and tighten spacing */
+.card-label.is-empty {
+  display: none;
+  margin-bottom: 0;
+}
+
+/* Tighter spacing between paragraphs on the how-to card */
+.card-text p {
+  margin: 0.35rem 0;
+}
 
     #confettiCanvas {
       position: fixed;
@@ -496,6 +502,26 @@
       height: 100%;
       pointer-events: none;
       z-index: 5;
+    }
+
+    .app-footer {
+      margin-top: 0.4rem;
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
+    .app-footer a {
+      color: #ffd166;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .app-footer a:hover {
+      opacity: 0.95;
     }
   </style>
 </head>
@@ -552,14 +578,13 @@
   <div class="card-area">
     <div class="card" id="card">
       <div class="card-header">
-        <div class="card-label" id="cardTypeLabel">Shared Modifier</div>
-        <div class="card-title" id="cardTitle">Tap the card or “Draw Card”</div>
+        <div class="card-label" id="cardTypeLabel">Modifier</div>
+        <div class="card-title" id="cardTitle">How to Play</div>
         <div class="card-divider"></div>
       </div>
       <div class="card-body">
         <div class="card-text" id="cardText">
-          At the start of each hole, draw a card and apply the chaos to everyone’s first shot.
-          Mini game and super modifier cards add special rules when they appear.
+          <!-- Starter text will be injected by JS -->
         </div>
       </div>
       <div class="card-footer"></div>
@@ -569,11 +594,26 @@
   <canvas id="confettiCanvas"></canvas>
   <div class="status" id="status"></div>
 
-  <script>
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSM17xNjd3IrbpPKTcPbImDp6eG4ZUGgVXj7QsJmZon4NzIvywm-IJ4rwMZ1eW1jNW--NHvQGWOtPzg/pub?gid=0&single=true&output=csv";
+  <div class="app-footer">
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSfcNcxnaL6A8oWO0cXT9sW6OQjXGq4Ip4tGaeFTsb9-3m5ZRg/viewform?usp=dialog"
+      target="_blank"
+      rel="noopener"
+    >
+      Fan-made tool · Info/Feedback/Contact
+    </a>
+  </div>
 
-    const DEFAULT_TITLE = 'Tap the card or “Draw Card”';
-    const DEFAULT_TEXT = 'At the start of each hole, draw a card and apply the chaos to everyone’s first shot. Mini game and super modifier cards add special rules when they appear.';
+  <script>
+    const SHEET_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vSM17xNjd3IrbpPKTcPbImDp6eG4ZUGgVXj7QsJmZon4NzIvywm-IJ4rwMZ1eW1jNW--NHvQGWOtPzg/pub?gid=0&single=true&output=csv";
+
+const DEFAULT_TITLE = "How to Play";
+const DEFAULT_TEXT_HTML = `
+  <p><strong>At the start of each hole</strong>, tap the card or “Draw Card” to reveal a chaos modifier.</p>
+  <p>It applies to <strong>everyone’s first shot only</strong> on that hole, unless the card says otherwise.</p>
+  <p><strong>Mini Game</strong> and <strong>Super Modifier</strong> cards add extra rules. <strong>Mini Games award Immunity Tokens</strong>—spend one to ignore any single modifier later.</p>
+`;
 
     let fullCards = [];
     let deck = [];
@@ -623,7 +663,7 @@
 
     function isSpecialCard(card) {
       if (!card) return false;
-      const isMiniGame = (card.type === "miniGame");
+      const isMiniGame = card.type === "miniGame";
       const cats = Array.isArray(card.categories) ? card.categories : [];
       const isSuperCategory = cats.includes("super");
       const name = typeof card.name === "string" ? card.name : "";
@@ -647,7 +687,8 @@
       discardPile = [];
 
       if (!source.length) {
-        statusEl.textContent = "No cards match the current filters. Adjust filters to rebuild the deck.";
+        statusEl.textContent =
+          "No cards match the current filters. Adjust filters to rebuild the deck.";
         return;
       }
 
@@ -657,7 +698,6 @@
       const hasNormal = source.some(card => !isSpecialCard(card));
 
       if (!hasSpecial || !hasNormal) {
-        // No spacing rule possible; just use shuffled order.
         deck = [...source].reverse();
         if (showMessage) updateStatus("Deck shuffled. Ready to draw.");
         else updateStatus();
@@ -701,15 +741,14 @@
       updateStatus();
     }
 
+    // Confetti
     let confettiParticles = [];
     let confettiAnimating = false;
 
     function launchConfetti(kind) {
-      // kind: "miniGame" | "super"
       const isMini = kind === "miniGame";
       const isSuper = kind === "super";
-
-      if (!isMini && !isSuper) return; // no confetti for regulars
+      if (!isMini && !isSuper) return;
 
       const baseCount = isMini ? 70 : 90;
       const colors = isMini
@@ -727,7 +766,7 @@
           vy: 2 + Math.random() * 3.2,
           rotation: Math.random() * Math.PI * 2,
           vr: -0.2 + Math.random() * 0.4,
-          square: !isMini && Math.random() < 0.35 // some chunkier squares for super
+          square: !isMini && Math.random() < 0.35
         });
       }
 
@@ -775,12 +814,16 @@
       }
     }
 
-    function resetCardFace() {
-      cardEl.classList.remove("mini-game", "super-modifier");
-      cardTypeLabel.textContent = "Shared Modifier";
-      cardTitleEl.textContent = DEFAULT_TITLE;
-      cardTextEl.textContent = DEFAULT_TEXT;
-    }
+function resetCardFace() {
+  cardEl.classList.remove("mini-game", "super-modifier");
+  cardEl.classList.add("intro");        // intro look
+
+  cardTypeLabel.textContent = "";
+  cardTypeLabel.classList.add("is-empty");
+
+  cardTitleEl.textContent = DEFAULT_TITLE;
+  cardTextEl.innerHTML = DEFAULT_TEXT_HTML;
+}
 
     function resetCardTransform() {
       if (!window.gsap) return;
@@ -810,27 +853,28 @@
         duration: 0.06,
         ease: "sine.inOut"
       })
-      .to(cardEl, {
-        x: 12,
-        rotationZ: 3,
-        duration: 0.06,
-        ease: "sine.inOut",
-        repeat: 4,
-        yoyo: true
-      })
-      .to(cardEl, {
-        x: 0,
-        rotationZ: 0,
-        duration: 0.12,
-        ease: "power1.out",
-        onComplete: resetCardFace
-      });
+        .to(cardEl, {
+          x: 12,
+          rotationZ: 3,
+          duration: 0.06,
+          ease: "sine.inOut",
+          repeat: 4,
+          yoyo: true
+        })
+        .to(cardEl, {
+          x: 0,
+          rotationZ: 0,
+          duration: 0.12,
+          ease: "power1.out",
+          onComplete: resetCardFace
+        });
     }
 
-    function applyCardStylesAndText(card) {
-      cardEl.classList.remove("mini-game", "super-modifier");
+function applyCardStylesAndText(card) {
+  cardEl.classList.remove("mini-game", "super-modifier", "intro");
+  cardTypeLabel.classList.remove("is-empty");
 
-      const isMiniGame = (card.type === "miniGame");
+      const isMiniGame = card.type === "miniGame";
       const name = typeof card.name === "string" ? card.name : "";
       const cats = Array.isArray(card.categories) ? card.categories : [];
       const isSuper = name.startsWith("Super Modifier") || cats.includes("super");
@@ -846,14 +890,12 @@
       } else if (isSuper) {
         cardTypeLabel.textContent = "Super Modifier";
       } else {
-        cardTypeLabel.textContent = "Shared Modifier";
+        cardTypeLabel.textContent = "Modifier";
       }
 
       cardTitleEl.textContent = card.name || "(Unnamed card)";
       cardTextEl.textContent = card.text || "";
     }
-
-    // === Animations ===
 
     // specialType: null | "miniGame" | "super"
     function animDropFromCameraCard(specialType) {
@@ -864,7 +906,7 @@
 
       const tl = gsap.timeline();
 
-      // 1) DROP: from slightly "closer" and up, down to near-final spot
+      // Drop in
       tl.fromTo(
         cardEl,
         {
@@ -881,7 +923,7 @@
         }
       );
 
-      // 2) SETTLE: bounce to final position
+      // Settle
       tl.to(cardEl, {
         scale: 1,
         y: 0,
@@ -889,27 +931,22 @@
         ease: "power1.out"
       });
 
-      // 3) SPECIAL: wiggle + confetti timed together
       if (specialType) {
-        // Trigger confetti right as the "special" phase begins
         tl.add(() => launchConfetti(specialType));
 
         if (specialType === "miniGame") {
-          // Cute, lighter wiggle
           tl.to(cardEl, {
             rotationZ: 2.0,
             duration: 0.08,
             yoyo: true,
             repeat: 3,
             ease: "sine.inOut"
-          })
-          .to(cardEl, {
+          }).to(cardEl, {
             rotationZ: 0,
             duration: 0.12,
             ease: "power1.out"
           });
         } else if (specialType === "super") {
-          // Stronger wiggle + tiny pulse
           tl.to(cardEl, {
             rotationZ: 3.0,
             scale: 1.02,
@@ -917,8 +954,7 @@
             yoyo: true,
             repeat: 4,
             ease: "sine.inOut"
-          })
-          .to(cardEl, {
+          }).to(cardEl, {
             rotationZ: 0,
             scale: 1,
             duration: 0.12,
@@ -1016,7 +1052,8 @@
           const rawCats = (r[catIdx] || "").trim();
           const rawText = (r[textIdx] || "").trim();
 
-          const type = rawType.toLowerCase() === "minigame" ? "miniGame" : "modifier";
+          const type =
+            rawType.toLowerCase() === "minigame" ? "miniGame" : "modifier";
 
           let categories = rawCats
             ? rawCats.split(/[;|]/).map(c => c.trim()).filter(Boolean)
@@ -1055,28 +1092,17 @@
       filtersPanel.classList.toggle("open");
     });
 
-    document.querySelectorAll('input[name="categoryFilter"]').forEach(input => {
-      input.addEventListener("change", () => {
-        buildDeck(false);
+    document
+      .querySelectorAll('input[name="categoryFilter"]')
+      .forEach(input => {
+        input.addEventListener("change", () => {
+          buildDeck(false);
+        });
       });
-    });
 
+    // Initialize default text and load data
+    resetCardFace();
     loadCardsFromSheet();
   </script>
 </body>
-    <div class="status" id="status"></div>
-
-  <footer class="app-footer">
-    <p class="app-footer-line">
-      Mini Golf Mayhem is a fan-made tool and is not affiliated with or endorsed by Mighty Coconut, Walkabout Mini Golf, or any other game. Made with AI coding assistance.
-    </p>
-    <p class="app-footer-line">
-      Have feedback or an idea to share?
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfcNcxnaL6A8oWO0cXT9sW6OQjXGq4Ip4tGaeFTsb9-3m5ZRg/viewform?usp=dialog" target="_blank" rel="noopener">
-        Tell me about it here.
-      </a>
-    </p>
-  </footer>
-</body>
-</html>
 </html>
