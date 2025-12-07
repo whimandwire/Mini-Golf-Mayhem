@@ -34,7 +34,7 @@
         linear-gradient(135deg, #130323, #05010a);
       font-family: "Fredoka", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #fff7ff;
-      overflow: hidden; /* keep confetti in bounds */
+      overflow: hidden;
     }
 
     h1 {
@@ -238,7 +238,6 @@
         0 0 0 2px rgba(120,0,0,0.6);
     }
 
-    /* Extra chaos glow for special cards */
     .card.chaos-glow {
       animation: chaosGlow 0.8s ease-in-out 0s 2 alternate;
     }
@@ -370,7 +369,6 @@
       }
     }
 
-    /* Full-screen confetti canvas */
     #confettiCanvas {
       position: fixed;
       inset: 0;
@@ -448,97 +446,13 @@
     </div>
   </div>
 
-  <!-- Confetti overlay -->
   <canvas id="confettiCanvas"></canvas>
-
   <div class="status" id="status"></div>
 
   <script>
-    // ===== CARD DATA =====
-    const modifiers = [
-      { name: "Advice Shot", type: "modifier", categories: ["social"], text: `Ask any player of your choice what shot they would take here—and attempt that exact shot.` },
-      { name: "Backwards Setup", type: "modifier", categories: ["movement"], text: `Stand facing away from the hole and twist your torso around to swing behind you.` },
-      { name: "Bank It", type: "modifier", categories: ["mechanics"], text: `Your shot must bounce off something—a wall, rock, or rim—if possible.` },
-      { name: "Behind-the-Back", type: "modifier", categories: ["movement","mechanics"], text: `Swing with your controller behind your back.` },
-      { name: "Billiard Shot", type: "modifier", categories: ["mechanics","movement"], text: `Get low like a pool player and poke the ball like a cue stick.` },
-      { name: "Blue Shell", type: "modifier", categories: ["social"], text: `The player currently in last place chooses a modifier or direction that the player(s) in the lead must follow for this shot.` },
-      { name: "Bowling Roll", type: "modifier", categories: ["movement","mechanics"], text: `Crouch and swing low as if rolling a bowling ball.` },
-      { name: "Call Your Shot", type: "modifier", categories: ["voice"], text: `Before swinging, describe aloud exactly what you intend the ball to do.` },
-      { name: "Club Compass", type: "modifier", categories: ["social","mechanics"], text: `Rotate your club back slowly until another player says “STOP!”—then swing forward without adjusting further.` },
-      { name: "Crowded Shot", type: "modifier", categories: ["social","movement"], text: `Other players may hover nearby and visually crowd your swing.` },
-      { name: "Echo Shot", type: "modifier", categories: ["mechanics","social"], text: `Attempt to recreate the shot taken by the player who went before you. If you are up first, enjoy a normal shot.` },
-      { name: "Elbows Glued", type: "modifier", categories: ["movement"], text: `Pretend your elbows are stuck to your sides as you swing.` },
-      { name: "Eyes Closed", type: "modifier", categories: ["mechanics"], text: `Line up your shot normally, then close your eyes for the swing.` },
-      { name: "Eyes on the Hole", type: "modifier", categories: ["mechanics"], text: `Look toward the hole, not the ball, while swinging.` },
-      { name: "Fast Shot", type: "modifier", categories: ["mechanics"], text: `Don’t think—just putt! Approach the ball and swing immediately.` },
-      { name: "Frozen Friends", type: "modifier", categories: ["social"], text: `All other players must freeze completely while you putt. If anyone moves, they must take their next shot opposite-handed.` },
-      { name: "Full Golf Swing", type: "modifier", categories: ["movement"], text: `Perform an exaggerated, full-body golf swing. Channel your inner PGA legend.` },
-      { name: "Granny Shot", type: "modifier", categories: ["movement","mechanics"], text: `Face the ball and swing with your controller between your legs.` },
-      { name: "Guided Shot", type: "modifier", categories: ["social","mechanics"], text: `Choose a player. They position themselves somewhere around the hole, and you must aim toward them.` },
-      { name: "Left Edge Stance", type: "modifier", categories: ["movement"], text: `Stand as far left on the tee as possible.` },
-      { name: "Look Away", type: "modifier", categories: ["movement"], text: `Turn your head away from the ball while swinging.` },
-      { name: "Long Club", type: "modifier", categories: ["movement","mechanics"], text: `Raise or fly your avatar upward until your club becomes comically long—then swing.` },
-      { name: "Lucky Normal", type: "modifier", categories: ["mechanics"], text: `You get a totally normal shot. Enjoy the break.` },
-      { name: "Mix It Up", type: "modifier", categories: ["movement"], text: `If you’ve been standing, take this shot seated. If you’ve been seated, take this shot standing.` },
-      { name: "No Practice Swings", type: "modifier", categories: ["mechanics"], text: `Make contact on your first swing—no practice!` },
-      { name: "No Wrist!", type: "modifier", categories: ["mechanics","movement"], text: `Lock your wrist. Use only arm rotation and body movement to swing.` },
-      { name: "One-Handed Swing", type: "modifier", categories: ["movement"], text: `Place one hand behind your back and swing with the other.` },
-      { name: "Opposite Hand", type: "modifier", categories: ["mechanics","movement"], text: `Swing using your non-dominant hand only.` },
-      { name: "Peanut Gallery", type: "modifier", categories: ["social","voice"], text: `All other players must loudly react the instant you hit the ball.` },
-      { name: "Player Commentary", type: "modifier", categories: ["social","voice"], text: `Choose another player. They must narrate your entire setup and swing like a sports announcer.` },
-      { name: "Puppet Coach", type: "modifier", categories: ["puppet","voice","social"], text: `Using your hand puppet, give yourself a pep talk before swinging.` },
-      { name: "Puppet Commentators", type: "modifier", categories: ["puppet","voice","social"], text: `During this hole, players may react to and comment on shots using hand puppets only.` },
-      { name: "Puppet Distractions", type: "modifier", categories: ["puppet","social"], text: `Other players may use their puppets to distract you while you swing.` },
-      { name: "Quiet on Set!", type: "modifier", categories: ["voice","social"], text: `Complete silence until the ball stops rolling—then everyone reacts loudly at once.` },
-      { name: "Reposition", type: "modifier", categories: ["movement"], text: `Line up your ideal shot, then take one full step left or right before swinging.` },
-      { name: "Right Edge Stance", type: "modifier", categories: ["movement"], text: `Stand as far right on the tee as possible.` },
-      { name: "Ringmaster Rumble", type: "modifier", categories: ["voice"], text: `Dramatically introduce your shot in your best announcer voice.` },
-      { name: "Robot Shot", type: "modifier", categories: ["movement","mechanics"], text: `Move only in straight lines and sharp angles while setting up and swinging.` },
-      { name: "Shot Dictator", type: "modifier", categories: ["social"], text: `The player who went before you dictates how you must line up or swing. If you’re first, the player with the highest (worst) score on the previous hole decides for you.` },
-      { name: "Silent Hole", type: "modifier", categories: ["voice","social"], text: `No one may speak for the entire hole. Non-verbal communication is fine. Mute if needed!` },
-      { name: "Skyline Shot", type: "modifier", categories: ["movement"], text: `Lift your club over your head and drop into the downswing from above.` },
-      { name: "Slow-Mo Swing", type: "modifier", categories: ["movement","mechanics"], text: `Swing in dramatic slow motion. Add speed at the last moment as needed.` },
-      { name: "Spin to Win", type: "modifier", categories: ["movement"], text: `Spin your avatar or your body in a full circle once before taking your swing.` },
-      { name: "Talkative Shot", type: "modifier", categories: ["voice"], text: `You must talk nonstop while setting up and swinging. If you stop talking for more than a second, you must swing immediately.` },
-      { name: "Tiny Club", type: "modifier", categories: ["movement","mechanics"], text: `Lower your avatar (crouch, sit, or fly down) until your club becomes tiny—then swing.` },
-      { name: "Trick Shot", type: "modifier", categories: ["mechanics"], text: `Attempt a tricky, risky, or stylish shot.` },
-      { name: "Wack-A-Doodle", type: "modifier", categories: ["mechanics"], text: `Hit the ball as hard as seems reasonable for the hole.` },
-      { name: "Whisper Shot", type: "modifier", categories: ["voice"], text: `Whisper dramatic commentary as you swing.` },
-      { name: "Super Modifier — Chaos Reigns", type: "modifier", categories: ["super"], text: `For the next card only, the chaos modifier applies to every shot you take on that hole, not just the first.` },
-      { name: "Super Modifier — Double Trouble", type: "modifier", categories: ["super"], text: `For the next hole only, draw two chaos cards instead of one. Apply the first to everyone’s first shot and the second to everyone’s second shot.` },
-      { name: "Super Modifier — Wild Reroll", type: "modifier", categories: ["super"], text: `Your group now has a single-use Reroll Token! At any later hole, you may vote (majority wins) to toss out the drawn card and pull a new one once. The redraw is final—the second card must be used.` },
-      { name: "Wrist-Only", type: "modifier", categories: ["mechanics","movement"], text: `Lock your elbow and shoulder—swing using wrist motion only.` }
-    ];
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSM17xNjd3IrbpPKTcPbImDp6eG4ZUGgVXj7QsJmZon4NzIvywm-IJ4rwMZ1eW1jNW--NHvQGWOtPzg/pub?gid=0&single=true&output=csv";
 
-    const miniGames = [
-      {
-        name: "Mini Game — Hide & Seek!",
-        type: "miniGame",
-        categories: ["mini-game","social"],
-        text: `Before playing this hole, everyone turns off name tags. The player (or players, if tied) currently in first place hides somewhere on the course. The first player to find a hider chooses a modifier (or draws a random card) for that hider’s first shot on this hole. If this is hole 1, redraw this card and use it on hole 2 instead.`
-      },
-      {
-        name: "Mini Game — Closest to the Hole",
-        type: "miniGame",
-        categories: ["mini-game","social"],
-        text: `On this hole, everyone plays their first shot as normal. The player whose ball ends closest to the cup on their first shot earns an immunity token. A hole-in-one wins automatically. If it is too close to call, all tied players earn a token.`
-      },
-      {
-        name: "Mini Game — Blind Betting",
-        type: "miniGame",
-        categories: ["mini-game","social"],
-        text: `Before anyone takes a shot, each player predicts how many strokes they’ll need to reach the cup. After the hole is completed, anyone whose prediction matches their actual score earns an immunity token.`
-      },
-      {
-        name: "Mini Game — Trick Shot Contest",
-        type: "miniGame",
-        categories: ["mini-game","social"],
-        text: `Everyone attempts their most absurd or stylish trick shot for their first stroke on this hole. After all shots, the group votes for their favorite performance. Whoever wins (ties allowed) earns an immunity token.`
-      }
-    ];
-
-    // ===== DECK LOGIC =====
-    let fullCards = [...modifiers, ...miniGames];
+    let fullCards = [];
     let deck = [];
     let discardPile = [];
 
@@ -577,30 +491,6 @@
       return inactive;
     }
 
-    // Remove cards with ANY inactive category, even if they have checked categories too.
-    function buildDeck(showMessage = true) {
-      const inactiveCats = getInactiveCategories();
-      let source = [...fullCards];
-
-      if (inactiveCats.length > 0) {
-        source = source.filter(card =>
-          card.categories.every(cat => !inactiveCats.includes(cat))
-        );
-      }
-
-      deck = [...source];
-      shuffleArray(deck);
-      discardPile = [];
-
-      if (deck.length === 0) {
-        statusEl.textContent = "No cards match the current filters. Adjust filters to rebuild the deck.";
-      } else if (showMessage) {
-        updateStatus("Deck shuffled. Ready to draw.");
-      } else {
-        updateStatus();
-      }
-    }
-
     function updateStatus(message = "") {
       const remaining = deck.length;
       const discarded = discardPile.length;
@@ -608,19 +498,102 @@
       statusEl.textContent = message ? `${message}  ${info}` : info;
     }
 
-    function drawCard() {
-      if (deck.length === 0) {
-        updateStatus("The deck is empty. Tap Shuffle Deck to start a new cycle.");
+    function isSpecialCard(card) {
+      if (!card) return false;
+      const isMiniGame = (card.type === "miniGame");
+      const cats = Array.isArray(card.categories) ? card.categories : [];
+      const isSuperCategory = cats.includes("super");
+      const name = typeof card.name === "string" ? card.name : "";
+      const isSuperName = name.startsWith("Super Modifier");
+      return isMiniGame || isSuperCategory || isSuperName;
+    }
+
+    function buildDeck(showMessage = true) {
+      if (!fullCards.length) {
+        statusEl.textContent = "Deck is still loading...";
         return;
       }
 
+      const inactiveCats = getInactiveCategories();
+      let source = fullCards.filter(card =>
+        !inactiveCats.length ||
+        card.categories.every(cat => !inactiveCats.includes(cat))
+      );
+
+      deck = [];
+      discardPile = [];
+
+      if (!source.length) {
+        statusEl.textContent = "No cards match the current filters. Adjust filters to rebuild the deck.";
+        return;
+      }
+
+      const specials = source.filter(isSpecialCard);
+      const normals = source.filter(card => !isSpecialCard(card));
+
+      // If there are no normals, spacing rules are impossible; just shuffle.
+      if (!normals.length || !specials.length) {
+        deck = [...source];
+        shuffleArray(deck);
+        if (showMessage) updateStatus("Deck shuffled. Ready to draw.");
+        else updateStatus();
+        return;
+      }
+
+      shuffleArray(specials);
+      shuffleArray(normals);
+
+      let ordered = [];
+
+      // First card must be a normal card
+      ordered.push(normals.pop());
+
+      // Case 1: specials <= normals → we can strictly alternate S,N,S,N...
+      if (specials.length <= normals.length) {
+        while (normals.length || specials.length) {
+          if (specials.length) {
+            ordered.push(specials.pop());
+          }
+          if (normals.length) {
+            ordered.push(normals.pop());
+          }
+        }
+      } else {
+        // Case 2: more specials than normals → best-effort spacing, no warnings
+        let lastWasSpecial = false;
+        while (normals.length || specials.length) {
+          if (!lastWasSpecial && specials.length && (normals.length === 0 || Math.random() < 0.5)) {
+            ordered.push(specials.pop());
+            lastWasSpecial = true;
+          } else if (normals.length) {
+            ordered.push(normals.pop());
+            lastWasSpecial = false;
+          } else {
+            // Only specials left; may get consecutive specials, which is fine in extreme filters
+            ordered.push(specials.pop());
+            lastWasSpecial = true;
+          }
+        }
+      }
+
+      // We draw from deck.pop(), so reverse so the "first" card is at the end
+      deck = ordered.reverse();
+
+      if (showMessage) updateStatus("Deck shuffled. Ready to draw.");
+      else updateStatus();
+    }
+
+    function drawCard() {
+      if (!deck.length) {
+        updateStatus("The deck is empty. Tap Shuffle Deck to start a new cycle.");
+        return;
+      }
       const card = deck.pop();
       discardPile.push(card);
       showCard(card);
       updateStatus();
     }
 
-    // Simple confetti system
     let confettiParticles = [];
     let confettiAnimating = false;
 
@@ -645,6 +618,7 @@
       if (!confettiAnimating) {
         confettiAnimating = true;
         const start = performance.now();
+
         function frame(now) {
           const elapsed = now - start;
           confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
@@ -672,6 +646,7 @@
             confettiAnimating = false;
           }
         }
+
         requestAnimationFrame(frame);
       }
     }
@@ -697,8 +672,11 @@
     function applyCardStylesAndText(card) {
       cardEl.classList.remove("mini-game", "super-modifier", "chaos-glow");
 
-      const isMiniGame = card.type === "miniGame";
-      const isSuper = card.name.startsWith("Super Modifier");
+      const special = isSpecialCard(card);
+      const isMiniGame = (card.type === "miniGame");
+      const name = typeof card.name === "string" ? card.name : "";
+      const isSuper = name.startsWith("Super Modifier") ||
+        (Array.isArray(card.categories) && card.categories.includes("super"));
 
       if (isMiniGame) {
         cardEl.classList.add("mini-game");
@@ -714,18 +692,16 @@
         cardTypeLabel.textContent = "Shared Modifier";
       }
 
-      cardTitleEl.textContent = card.name;
-      cardTextEl.textContent = card.text;
+      cardTitleEl.textContent = card.name || "(Unnamed card)";
+      cardTextEl.textContent = card.text || "";
 
-      // Extra chaos flair for mini games + supers
-      if (isMiniGame || isSuper) {
+      if (special) {
         cardEl.classList.add("chaos-glow");
         launchConfetti();
       }
     }
 
     function showCard(card) {
-      // If GSAP is available, use flip animation
       if (window.gsap) {
         gsap.to(cardEl, {
           duration: 0.2,
@@ -747,11 +723,114 @@
           }
         });
       } else {
-        // fallback to simple CSS animation
         cardEl.classList.remove("draw-anim");
         void cardEl.offsetWidth;
         cardEl.classList.add("draw-anim");
         applyCardStylesAndText(card);
+      }
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+
+        if (inQuotes) {
+          if (ch === '"') {
+            if (text[i + 1] === '"') {
+              cell += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            cell += ch;
+          }
+        } else {
+          if (ch === '"') {
+            inQuotes = true;
+          } else if (ch === ",") {
+            row.push(cell);
+            cell = "";
+          } else if (ch === "\n") {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          } else if (ch === "\r") {
+            // ignore
+          } else {
+            cell += ch;
+          }
+        }
+      }
+
+      if (cell !== "" || row.length) {
+        row.push(cell);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    async function loadCardsFromSheet() {
+      statusEl.textContent = "Loading deck from sheet...";
+      deck = [];
+      discardPile = [];
+      try {
+        const res = await fetch(SHEET_CSV_URL);
+        if (!res.ok) throw new Error("Network error");
+        const text = await res.text();
+        const rows = parseCsv(text);
+        if (!rows.length) {
+          statusEl.textContent = "No data found in sheet.";
+          return;
+        }
+
+        const header = rows[0].map(h => h.trim().toLowerCase());
+        const nameIdx = header.indexOf("name");
+        const typeIdx = header.indexOf("type");
+        const catIdx = header.indexOf("categories");
+        const textIdx = header.indexOf("text");
+
+        const cards = [];
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (!r || r.every(c => !c || !c.trim())) continue;
+
+          const rawName = (r[nameIdx] || "").trim();
+          const rawType = (r[typeIdx] || "modifier").trim();
+          const rawCats = (r[catIdx] || "").trim();
+          const rawText = (r[textIdx] || "").trim();
+
+          const type = rawType.toLowerCase() === "minigame" ? "miniGame" : "modifier";
+
+          let categories = rawCats
+            ? rawCats.split(/[;|]/).map(c => c.trim()).filter(Boolean)
+            : [];
+
+          if (rawName.startsWith("Super Modifier") && !categories.includes("super")) {
+            categories.push("super");
+          }
+
+          cards.push({
+            name: rawName,
+            type,
+            categories,
+            text: rawText
+          });
+        }
+
+        fullCards = cards;
+        buildDeck(false);
+        updateStatus("Deck loaded. Ready to draw.");
+      } catch (err) {
+        console.error("Error loading sheet", err);
+        statusEl.textContent = "Could not load deck from sheet.";
       }
     }
 
@@ -772,9 +851,7 @@
       });
     });
 
-    // init
-    buildDeck(false);
-    updateStatus("Deck shuffled. Ready to draw.");
+    loadCardsFromSheet();
   </script>
 </body>
 </html>
