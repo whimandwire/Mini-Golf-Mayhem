@@ -893,8 +893,9 @@ function applyCardStylesAndText(card) {
         cardTypeLabel.textContent = "Modifier";
       }
 
-      cardTitleEl.textContent = card.name || "(Unnamed card)";
-      cardTextEl.textContent = card.text || "";
+  cardTitleEl.textContent = card.name || "(Unnamed card)";
+  cardTextEl.innerHTML = card.text || "";
+
     }
 
     // specialType: null | "miniGame" | "super"
